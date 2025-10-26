@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Volcano
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.0
 // @description  no desc
 // @author       Berlin
 // @match        https://key.volcano.wtf/*
@@ -11,5 +11,5 @@
 // @icon         https://i.imgur.com/wY2kL.jpeg
 // @downloadURL  https://github.com/xb3rlinz/vb/raw/main/tm.user.js
 // @updateURL    https://github.com/xb3rlinz/vb/raw/main/tm.user.js
-// @require      https://raw.githubusercontent.com/xb3rlinz/vb/refs/heads/main/test.js
+// @require      https://raw.githubusercontent.com/xb3rlinz/vb/refs/heads/main/bypasser.js
 // ==/UserScript==
