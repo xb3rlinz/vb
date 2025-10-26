@@ -8,14 +8,14 @@
     const t = {
         title: "Volcano Bypasser",
         pleaseSolveCaptcha: "Solve the CAPTCHA to continue",
-        captchaSuccess: "CAPTCHA solved successfully",
+        captchaSuccess: "CAPTCHA solved",
         redirectingToWork: "Redirecting to Work.ink...",
-        bypassSuccessCopy: "Bypass successful! Key copied (click 'Allow' if prompted)",
-        bypassSuccess: "Bypass successful, waiting {time}s...",
-        backToCheckpoint: "Returning to checkpoint...",
-        captchaSuccessBypassing: "CAPTCHA solved successfully, bypassing...",
-        version: "Version 1.0",
-        madeBy: "Made by Berlin"
+        bypassSuccessCopy: "Success! Key copied (click 'Allow' if prompted)",
+        bypassSuccess: "Success! Waiting {time}s...",
+        backToCheckpoint: "Back to checkpoint...",
+        captchaSuccessBypassing: "CAPTCHA solved, bypassing...",
+        version: "v1.0",
+        madeBy: "by Berlin"
     };
 
     // Bypass Panel (UI)
@@ -34,55 +34,57 @@
                 .panel-container {
                     position: fixed; top: 20px; right: 20px; width: 360px;
                     z-index: 2147483647;
-                    font-family: 'Inter', 'Segoe UI', sans-serif;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
                 }
                 .panel {
-                    background: #0f0f14;
-                    border-radius: 10px;
-                    border: 1px solid #1f1f28;
-                    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+                    background: #0a0a0f;
+                    border-radius: 12px;
+                    border: 1px solid #1a1a24;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
                     overflow: hidden;
-                    animation: slideIn 0.3s ease-out;
+                    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
                 @keyframes slideIn {
-                    from { opacity: 0; transform: translateY(-10px); }
+                    from { opacity: 0; transform: translateY(-20px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
                 .header {
-                    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-                    padding: 16px 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    padding: 18px 20px;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                 }
                 .title {
-                    font-size: 16px; 
+                    font-size: 15px; 
                     font-weight: 600; 
                     color: #fff;
+                    letter-spacing: 0.3px;
                 }
                 .minimize-btn {
-                    background: rgba(255, 255, 255, 0.15);
+                    background: rgba(255, 255, 255, 0.2);
                     border: none;
                     color: #fff;
-                    width: 28px; height: 28px;
+                    width: 26px; height: 26px;
                     border-radius: 6px;
                     cursor: pointer;
-                    font-size: 18px; 
+                    font-size: 16px; 
                     font-weight: 500;
-                    transition: background 0.2s ease;
+                    transition: all 0.2s ease;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                 }
                 .minimize-btn:hover {
-                    background: rgba(255, 255, 255, 0.25);
+                    background: rgba(255, 255, 255, 0.3);
+                    transform: scale(1.05);
                 }
                 .status-section {
-                    padding: 18px 20px;
+                    padding: 16px 20px;
                 }
                 .status-box {
-                    background: #16161d;
-                    border: 1px solid #1f1f28;
+                    background: #12121a;
+                    border: 1px solid #1a1a24;
                     border-radius: 8px;
                     padding: 14px 16px;
                 }
@@ -92,23 +94,23 @@
                     gap: 12px;
                 }
                 .status-dot {
-                    width: 10px; 
-                    height: 10px;
+                    width: 8px; 
+                    height: 8px;
                     border-radius: 50%;
                     animation: pulse 2s ease-in-out infinite;
                     flex-shrink: 0;
                 }
                 @keyframes pulse {
                     0%, 100% { opacity: 1; transform: scale(1); }
-                    50% { opacity: 0.7; transform: scale(1.1); }
+                    50% { opacity: 0.6; transform: scale(1.15); }
                 }
-                .status-dot.info { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
-                .status-dot.success { background: #10b981; box-shadow: 0 0 8px #10b981; }
-                .status-dot.warning { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
-                .status-dot.error { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+                .status-dot.info { background: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+                .status-dot.success { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+                .status-dot.warning { background: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+                .status-dot.error { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
                 .status-text {
-                    color: #e4e4e7;
-                    font-size: 14px;
+                    color: #e5e5e7;
+                    font-size: 13px;
                     font-weight: 400;
                     flex: 1;
                     line-height: 1.5;
@@ -124,18 +126,17 @@
                     opacity: 0;
                 }
                 .info-section {
-                    padding: 14px 20px;
-                    background: #0a0a0f;
-                    border-top: 1px solid #1f1f28;
+                    padding: 12px 20px;
+                    background: #08080d;
+                    border-top: 1px solid #1a1a24;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                 }
                 .version, .credit {
                     color: #6b6b7a;
-                    font-size: 12px;
+                    font-size: 11px;
                     font-weight: 400;
-                    font-style: italic;
                 }
                 @media (max-width: 480px) {
                     .panel-container {
@@ -147,17 +148,17 @@
                     <div class="panel">
                         <div class="header">
                             <div class="title">${t.title}</div>
-                            <button class="minimize-btn" id="btn">+</button>
+                            <button class="minimize-btn" id="btn">−</button>
                         </div>
-                        <div class="status-section">
-                            <div class="status-box">
-                                <div class="status-content">
-                                    <div class="status-dot info" id="dot"></div>
-                                    <div class="status-text" id="text">${t.pleaseSolveCaptcha}</div>
+                        <div class="panel-body" id="body">
+                            <div class="status-section">
+                                <div class="status-box">
+                                    <div class="status-content">
+                                        <div class="status-dot info" id="dot"></div>
+                                        <div class="status-text" id="text">${t.pleaseSolveCaptcha}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="panel-body hidden" id="body">
                             <div class="info-section">
                                 <div class="version">${t.version}</div>
                                 <div class="credit">${t.madeBy}</div>
@@ -197,17 +198,18 @@
         if (debug) console.log('[Debug] Waiting Captcha');
 
         let continueClicked = false;
+        let copyClicked = false;
 
         const actOnCheckpoint = (node) => {
             if (!continueClicked) {
                 const btns = (node?.nodeType === 1
-                    ? node.matches('#primaryButton[type="submit"], button[type="submit"]')
+                    ? node.matches('#primaryButton[type="submit"], button[type="submit"], a, input[type=button], input[type=submit]')
                         ? [node]
-                        : node.querySelectorAll('#primaryButton[type="submit"], button[type="submit"]')
-                    : document.querySelectorAll('#primaryButton[type="submit"], button[type="submit"]'));
+                        : node.querySelectorAll('#primaryButton[type="submit"], button[type="submit"], a, input[type=button], input[type=submit]')
+                    : document.querySelectorAll('#primaryButton[type="submit"], button[type="submit"], a, input[type=button], input[type=submit]'));
 
                 for (const btn of btns) {
-                    const text = (btn.innerText || '').trim().toLowerCase();
+                    const text = (btn.innerText || btn.value || '').trim().toLowerCase();
                     if ((text.includes("continue") || text.includes("next step")) &&
                         !btn.disabled &&
                         btn.offsetParent) {
@@ -230,7 +232,8 @@
                     : node.querySelector("#copy-key-btn, .copy-btn, [aria-label='Copy']")
                 : document.querySelector("#copy-key-btn, .copy-btn, [aria-label='Copy']"));
 
-            if (copyBtn) {
+            if (copyBtn && !copyClicked) {
+                copyClicked = true;
                 setInterval(() => {
                     copyBtn.click();
                     if (debug) console.log('[Debug] Copy button spam click');
@@ -245,10 +248,20 @@
             for (const m of mutations) {
                 if (m.type === 'childList') {
                     for (const node of m.addedNodes) {
-                        if (node.nodeType === 1 && actOnCheckpoint(node)) return;
+                        if (node.nodeType === 1 && actOnCheckpoint(node)) {
+                            if (copyClicked) {
+                                mo.disconnect();
+                                return;
+                            }
+                        }
                     }
                 } else if (m.type === 'attributes' && m.target.nodeType === 1) {
-                    if (actOnCheckpoint(m.target)) return;
+                    if (actOnCheckpoint(m.target)) {
+                        if (copyClicked) {
+                            mo.disconnect();
+                            return;
+                        }
+                    }
                 }
             }
         });
@@ -263,7 +276,7 @@
         actOnCheckpoint();
     }
 
-    // Handler for WORK.INK
+    // Handler for WORK.INK - Using working logic from second script
     if (host.includes("work.ink")) {
         const startTime = Date.now();
         let sessionController, sendMessageA, onLinkInfoA, onLinkDestinationA;
@@ -279,8 +292,9 @@
 
         const getFunction = (obj, candidates = null) => {
             if (candidates) {
-                for (const name of candidates) {
-                    if (typeof obj[name] === "function") return { fn: obj[name], name };
+                for (let i = 0; i < candidates.length; i++) {
+                    const name = candidates[i];
+                    if (typeof obj[name] === "function") return { fn: obj[name], index: i, name };
                 }
             } else {
                 for (const i in obj) {
@@ -289,25 +303,12 @@
                     }
                 }
             }
-            return { fn: null, name: null };
+            return { fn: null, index: -1, name: null };
         };
 
-        const triggerBypass = (reason) => {
-            if (bypassTriggered) return;
-            bypassTriggered = true;
-            if (debug) console.log('[Debug] trigger Bypass via:', reason);
-            panel.show('captchaSuccessBypassing', 'success');
-            try {
-                spoofWorkink();
-                triggerBp();
-            } catch (e) {
-                if (debug) console.warn('[Debug] Bypass failed:', e);
-            }
-        };
-
-        const spoofWorkink = () => {
+        const spoofAllTasks = () => {
             if (!sessionController?.linkInfo) return;
-            if (debug) console.log('[Debug] spoof Workink starting');
+            if (debug) console.log('[Debug] Spoofing all tasks');
 
             for (const soc of sessionController.linkInfo.socials || []) {
                 sendMessageA?.call(this, types.ss, { url: soc.url });
@@ -338,10 +339,28 @@
         const trm = () => function(...a) {
             const [msgType] = a;
             if (msgType === types.ad) return;
-            if (sessionController?.linkInfo && msgType === types.tr) {
-                triggerBypass('tr');
+            const result = sendMessageA ? sendMessageA.apply(this, a) : undefined;
+
+            // Intelligent Spammer Logic
+            if (!bypassTriggered && sessionController?.linkInfo && msgType === types.tr) {
+                bypassTriggered = true;
+                panel.show('captchaSuccessBypassing', 'success');
+                if (debug) console.log('[Debug] CAPTCHA success! Starting intelligent spammer sequence');
+
+                // Phase 1: Initial 5x burst
+                if (debug) console.log('[Debug] Phase 1: Firing initial 5x spoof burst');
+                for (let i = 1; i <= 5; i++) spoofAllTasks();
+
+                // Phase 2: Fallback timer
+                setTimeout(() => {
+                    const dest = getFunction(sessionController, map.onLD);
+                    if (dest.fn) {
+                        if (debug) console.log('[Debug] Phase 2: 5s passed with no link. Firing fallback burst');
+                        for (let i = 1; i <= 5; i++) spoofAllTasks();
+                    }
+                }, 5000);
             }
-            return sendMessageA?.apply(this, a);
+            return result;
         };
 
         const createLinkInfoProxy = () => function(...args) {
@@ -372,6 +391,19 @@
 
         const createDestinationProxy = () => function(...args) {
             const [data] = args;
+            if (debug) console.log('[Debug] SUCCESS: Destination data received!', data);
+
+            // Kill Switch - prevents multiple redirects
+            const dest = getFunction(sessionController, map.onLD);
+            if (dest.fn) {
+                if (debug) console.log('[Debug] Kill Switch: Deactivating destination listener');
+                Object.defineProperty(sessionController, dest.name, {
+                    value: () => { if (debug) console.log('[Debug] Subsequent destination ignored'); },
+                    writable: true,
+                    configurable: true
+                });
+            }
+
             const secondsPassed = (Date.now() - startTime) / 1000;
             let waitTimeSeconds = 5;
             const url = location.href;
@@ -385,12 +417,6 @@
                 startCountdown(data.url, waitTimeSeconds - secondsPassed);
             }
             return onLinkDestinationA?.apply(this, args);
-        };
-
-        const triggerBp = () => {
-            if (sessionController?.linkDestination) {
-                createDestinationProxy().call(sessionController, sessionController.linkDestination);
-            }
         };
 
         const setupProxies = () => {
@@ -503,10 +529,6 @@
                             node.remove();
                         }
                         node.querySelectorAll?.('.adsbygoogle, [id*=ad], [id*=container]').forEach(el => el.remove());
-                        if (node.matches('.button.large.accessBtn.pos-relative.svelte-bv7qlp') && 
-                            node.textContent.includes('Go To Destination')) {
-                            triggerBypass('gtd');
-                        }
                     }
                 }
             }
