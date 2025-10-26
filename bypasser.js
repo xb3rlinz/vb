@@ -6,7 +6,7 @@
 
     // Headers
     const t = {
-        title: "Volcano Bypasser",
+        title: "Test Bypasser",
         pleaseSolveCaptcha: "Solve the CAPTCHA to continue",
         captchaSuccess: "CAPTCHA solved successfully",
         redirectingToWork: "Redirecting to Work.ink...",
