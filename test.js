@@ -6,19 +6,19 @@
 
     // Headers
     const t = {
-        title: "LinkFlow Pro",
-        pleaseSolveCaptcha: "Awaiting verification",
-        captchaSuccess: "Verification complete",
-        redirectingToWork: "Preparing redirect...",
-        bypassSuccessCopy: "Process complete • Key secured",
-        bypassSuccess: "Redirecting in {time}s",
-        backToCheckpoint: "Finalizing redirect...",
-        captchaSuccessBypassing: "Verified • Processing...",
-        version: "v2.0.1",
-        madeBy: "Crafted with precision"
+        title: "Volcano Bypasser",
+        pleaseSolveCaptcha: "Solve the CAPTCHA to continue",
+        captchaSuccess: "CAPTCHA solved successfully",
+        redirectingToWork: "Redirecting to Work.ink...",
+        bypassSuccessCopy: "Bypass successful! Key copied (click 'Allow' if prompted)",
+        bypassSuccess: "Bypass successful, waiting {time}s...",
+        backToCheckpoint: "Returning to checkpoint...",
+        captchaSuccessBypassing: "CAPTCHA solved successfully, bypassing...",
+        version: "Version 1.0",
+        madeBy: "Made by Berlin"
     };
 
-    // Enhanced UI Panel
+    // Bypass Panel (UI)
     class BypassPanel {
         constructor() {
             this.init();
@@ -32,243 +32,116 @@
                 <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
                 
+                @keyframes slideIn {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.6; }
+                }
+                
                 .panel-container {
                     position: fixed;
-                    top: 24px;
-                    right: 24px;
+                    top: 20px;
+                    right: 20px;
                     width: 360px;
                     z-index: 2147483647;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
+                    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+                    animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
                 }
                 
                 .panel {
-                    background: rgba(15, 15, 20, 0.92);
-                    backdrop-filter: blur(24px) saturate(180%);
-                    -webkit-backdrop-filter: blur(24px) saturate(180%);
-                    border: 1px solid rgba(255, 255, 255, 0.08);
-                    border-radius: 20px;
-                    box-shadow: 
-                        0 24px 48px rgba(0, 0, 0, 0.4),
-                        0 8px 16px rgba(0, 0, 0, 0.3),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                    background: rgba(255, 255, 255, 0.85);
+                    backdrop-filter: blur(40px) saturate(180%);
+                    -webkit-backdrop-filter: blur(40px) saturate(180%);
+                    border-radius: 18px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
+                                0 2px 8px rgba(0, 0, 0, 0.08);
                     overflow: hidden;
-                    animation: panelEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-                }
-                
-                @keyframes panelEntrance {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-20px) scale(0.95);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0) scale(1);
-                    }
+                    border: 0.5px solid rgba(255, 255, 255, 0.8);
                 }
                 
                 .header {
-                    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-                    padding: 18px 20px;
+                    padding: 20px 24px;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    position: relative;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                }
-                
-                .header::before {
-                    content: '';
-                    position: absolute;
-                    inset: 0;
-                    background: linear-gradient(
-                        110deg,
-                        transparent 25%,
-                        rgba(255, 255, 255, 0.15) 50%,
-                        transparent 75%
-                    );
-                    animation: headerShimmer 3s ease-in-out infinite;
-                }
-                
-                @keyframes headerShimmer {
-                    0%, 100% { transform: translateX(-100%); opacity: 0; }
-                    50% { opacity: 1; }
-                }
-                
-                .title-wrapper {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    position: relative;
-                    z-index: 1;
-                }
-                
-                .icon {
-                    width: 24px;
-                    height: 24px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                
-                .icon svg {
-                    width: 100%;
-                    height: 100%;
-                    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+                    border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
                 }
                 
                 .title {
-                    font-size: 16px;
+                    font-size: 17px;
                     font-weight: 600;
-                    color: #fff;
-                    letter-spacing: -0.02em;
-                    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                    color: #1d1d1f;
+                    letter-spacing: -0.022em;
                 }
                 
-                .controls {
-                    display: flex;
-                    gap: 8px;
-                    position: relative;
-                    z-index: 1;
-                }
-                
-                .control-btn {
-                    background: rgba(255, 255, 255, 0.12);
-                    border: 1px solid rgba(255, 255, 255, 0.15);
-                    color: #fff;
-                    width: 32px;
-                    height: 32px;
-                    border-radius: 10px;
+                .minimize-btn {
+                    background: rgba(0, 0, 0, 0.04);
+                    border: none;
+                    color: #1d1d1f;
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 50%;
                     cursor: pointer;
                     font-size: 18px;
-                    font-weight: 500;
+                    font-weight: 400;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-                    backdrop-filter: blur(8px);
+                    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+                    line-height: 1;
                 }
                 
-                .control-btn:hover {
-                    background: rgba(255, 255, 255, 0.2);
-                    border-color: rgba(255, 255, 255, 0.3);
-                    transform: translateY(-1px);
+                .minimize-btn:hover {
+                    background: rgba(0, 0, 0, 0.08);
+                    transform: scale(1.05);
                 }
                 
-                .control-btn:active {
-                    transform: translateY(0);
+                .minimize-btn:active {
+                    transform: scale(0.95);
                 }
                 
                 .status-section {
-                    padding: 20px;
+                    padding: 20px 24px;
                 }
                 
-                .status-card {
-                    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
-                    border: 1px solid rgba(99, 102, 241, 0.2);
-                    border-radius: 14px;
-                    padding: 16px;
-                    position: relative;
-                    overflow: hidden;
-                    transition: all 0.3s ease;
-                }
-                
-                .status-card::before {
-                    content: '';
-                    position: absolute;
-                    inset: 0;
-                    background: linear-gradient(
-                        90deg,
-                        transparent,
-                        rgba(255, 255, 255, 0.04),
-                        transparent
-                    );
-                    animation: cardShimmer 2.5s infinite;
-                }
-                
-                @keyframes cardShimmer {
-                    0% { transform: translateX(-100%); }
-                    100% { transform: translateX(200%); }
-                }
-                
-                .status-content {
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 14px;
-                    position: relative;
-                    z-index: 1;
-                }
-                
-                .status-indicator {
-                    width: 40px;
-                    height: 40px;
+                .status-box {
+                    background: rgba(0, 0, 0, 0.03);
                     border-radius: 12px;
+                    padding: 16px;
                     display: flex;
                     align-items: center;
-                    justify-content: center;
-                    flex-shrink: 0;
-                    position: relative;
-                }
-                
-                .status-indicator::before {
-                    content: '';
-                    position: absolute;
-                    inset: -2px;
-                    border-radius: 13px;
-                    padding: 2px;
-                    background: linear-gradient(135deg, currentColor, transparent);
-                    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-                    -webkit-mask-composite: xor;
-                    mask-composite: exclude;
-                    opacity: 0.3;
+                    gap: 12px;
                 }
                 
                 .status-dot {
-                    width: 10px;
-                    height: 10px;
+                    width: 8px;
+                    height: 8px;
                     border-radius: 50%;
-                    animation: statusPulse 2s ease-in-out infinite;
-                    box-shadow: 0 0 16px currentColor, 0 0 32px currentColor;
+                    flex-shrink: 0;
+                    animation: pulse 2s ease-in-out infinite;
                 }
                 
-                @keyframes statusPulse {
-                    0%, 100% { opacity: 1; transform: scale(1); }
-                    50% { opacity: 0.6; transform: scale(1.2); }
-                }
-                
-                .status-indicator.info { color: #60a5fa; background: rgba(96, 165, 250, 0.12); }
-                .status-indicator.success { color: #4ade80; background: rgba(74, 222, 128, 0.12); }
-                .status-indicator.warning { color: #fbbf24; background: rgba(251, 191, 36, 0.12); }
-                .status-indicator.error { color: #f87171; background: rgba(248, 113, 113, 0.12); }
-                
-                .status-text-wrapper {
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 4px;
-                    min-width: 0;
-                }
+                .status-dot.info { background: #007AFF; }
+                .status-dot.success { background: #34C759; }
+                .status-dot.warning { background: #FF9500; }
+                .status-dot.error { background: #FF3B30; }
                 
                 .status-text {
-                    color: rgba(255, 255, 255, 0.95);
+                    color: #1d1d1f;
                     font-size: 14px;
-                    font-weight: 500;
-                    line-height: 1.5;
-                    letter-spacing: -0.01em;
-                }
-                
-                .status-subtext {
-                    color: rgba(255, 255, 255, 0.5);
-                    font-size: 12px;
                     font-weight: 400;
-                    letter-spacing: -0.01em;
+                    line-height: 1.47;
+                    letter-spacing: -0.016em;
                 }
                 
                 .panel-body {
-                    max-height: 200px;
+                    max-height: 500px;
                     overflow: hidden;
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                     opacity: 1;
                 }
                 
@@ -278,87 +151,86 @@
                 }
                 
                 .info-section {
-                    padding: 18px 20px;
-                    background: rgba(0, 0, 0, 0.2);
-                    border-top: 1px solid rgba(255, 255, 255, 0.05);
-                }
-                
-                .info-grid {
+                    padding: 16px 24px 20px;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
+                    border-top: 0.5px solid rgba(0, 0, 0, 0.06);
                 }
                 
-                .version {
-                    color: rgba(255, 255, 255, 0.4);
-                    font-size: 11px;
-                    font-weight: 600;
-                    letter-spacing: 0.05em;
-                    text-transform: uppercase;
-                }
-                
-                .credit {
-                    color: rgba(255, 255, 255, 0.3);
+                .version, .credit {
+                    color: #86868b;
                     font-size: 11px;
                     font-weight: 400;
                     font-style: italic;
                     letter-spacing: -0.01em;
                 }
                 
-                @media (max-width: 480px) {
-                    .panel-container {
-                        top: 16px;
-                        right: 16px;
-                        left: 16px;
-                        width: auto;
+                @media (prefers-color-scheme: dark) {
+                    .panel {
+                        background: rgba(30, 30, 30, 0.85);
+                        border: 0.5px solid rgba(255, 255, 255, 0.15);
+                    }
+                    
+                    .header {
+                        border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .title {
+                        color: #f5f5f7;
+                    }
+                    
+                    .minimize-btn {
+                        background: rgba(255, 255, 255, 0.08);
+                        color: #f5f5f7;
+                    }
+                    
+                    .minimize-btn:hover {
+                        background: rgba(255, 255, 255, 0.12);
+                    }
+                    
+                    .status-box {
+                        background: rgba(255, 255, 255, 0.06);
+                    }
+                    
+                    .status-text {
+                        color: #f5f5f7;
+                    }
+                    
+                    .info-section {
+                        border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    .version, .credit {
+                        color: #86868b;
                     }
                 }
                 
-                @media (prefers-color-scheme: light) {
-                    .panel {
-                        background: rgba(255, 255, 255, 0.92);
-                        border-color: rgba(0, 0, 0, 0.08);
+                @media (max-width: 480px) {
+                    .panel-container {
+                        top: 12px;
+                        right: 12px;
+                        left: 12px;
+                        width: auto;
                     }
-                    .status-text { color: rgba(0, 0, 0, 0.9); }
-                    .status-subtext { color: rgba(0, 0, 0, 0.5); }
-                    .version { color: rgba(0, 0, 0, 0.4); }
-                    .credit { color: rgba(0, 0, 0, 0.3); }
                 }
                 </style>
                 <div class="panel-container">
                     <div class="panel">
                         <div class="header">
-                            <div class="title-wrapper">
-                                <div class="icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="white" opacity="0.9"/>
-                                    </svg>
-                                </div>
-                                <div class="title">${t.title}</div>
-                            </div>
-                            <div class="controls">
-                                <button class="control-btn" id="btn" title="Toggle panel">−</button>
-                            </div>
+                            <div class="title">${t.title}</div>
+                            <button class="minimize-btn" id="btn">+</button>
                         </div>
                         <div class="status-section">
-                            <div class="status-card">
-                                <div class="status-content">
-                                    <div class="status-indicator info" id="indicator">
-                                        <div class="status-dot" id="dot"></div>
-                                    </div>
-                                    <div class="status-text-wrapper">
-                                        <div class="status-text" id="text">${t.pleaseSolveCaptcha}</div>
-                                        <div class="status-subtext" id="subtext">Processing request</div>
-                                    </div>
-                                </div>
+                            <div class="status-box">
+                                <div class="status-dot info" id="dot"></div>
+                                <div class="status-text" id="text">${t.pleaseSolveCaptcha}</div>
                             </div>
                         </div>
-                        <div class="panel-body" id="body">
+                        <div class="panel-body hidden" id="body">
                             <div class="info-section">
-                                <div class="info-grid">
-                                    <div class="version">${t.version}</div>
-                                    <div class="credit">${t.madeBy}</div>
-                                </div>
+                                <div class="version">${t.version}</div>
+                                <div class="credit">${t.madeBy}</div>
                             </div>
                         </div>
                     </div>
@@ -366,9 +238,7 @@
             `;
 
             this.statusText = shadow.getElementById('text');
-            this.statusSubtext = shadow.getElementById('subtext');
             this.statusDot = shadow.getElementById('dot');
-            this.statusIndicator = shadow.getElementById('indicator');
             const body = shadow.getElementById('body');
             const btn = shadow.getElementById('btn');
 
@@ -385,18 +255,8 @@
             Object.keys(replacements).forEach(k => {
                 text = text.replace(`{${k}}`, replacements[k]);
             });
-            
             this.statusText.textContent = text;
-            this.statusIndicator.className = `status-indicator ${type}`;
-            
-            // Update subtext based on type
-            const subtexts = {
-                info: 'Processing request',
-                success: 'Operation successful',
-                warning: 'Please wait',
-                error: 'Action required'
-            };
-            this.statusSubtext.textContent = subtexts[type] || 'Processing request';
+            this.statusDot.className = `status-dot ${type}`;
         }
     }
 
