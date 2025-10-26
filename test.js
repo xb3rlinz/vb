@@ -31,187 +31,139 @@
             shadow.innerHTML = `
                 <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
-                
-                @keyframes slideIn {
-                    from { opacity: 0; transform: translateY(-10px); }
-                    to { opacity: 1; transform: translateY(0); }
+                .panel-container {
+                    position: fixed; top: 20px; right: 20px; width: 380px;
+                    z-index: 2147483647;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
                 }
-                
+                .panel {
+                    background: rgba(17, 17, 27, 0.95);
+                    backdrop-filter: blur(20px);
+                    border-radius: 12px;
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+                    overflow: hidden;
+                    animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                }
+                @keyframes slideIn {
+                    from { opacity: 0; transform: translateX(30px) translateY(-10px); }
+                    to { opacity: 1; transform: translateX(0) translateY(0); }
+                }
+                .header {
+                    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+                    padding: 14px 18px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                }
+                .title {
+                    font-size: 15px; 
+                    font-weight: 600; 
+                    color: #fff;
+                    letter-spacing: -0.01em;
+                }
+                .minimize-btn {
+                    background: transparent;
+                    border: 1px solid rgba(255, 255, 255, 0.12);
+                    color: rgba(255, 255, 255, 0.7);
+                    width: 28px; height: 28px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 16px; 
+                    font-weight: 400;
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .minimize-btn:hover {
+                    background: rgba(255, 255, 255, 0.08);
+                    border-color: rgba(255, 255, 255, 0.2);
+                    color: #fff;
+                }
+                .minimize-btn:active {
+                    transform: scale(0.95);
+                }
+                .status-section {
+                    padding: 16px;
+                }
+                .status-box {
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid rgba(255, 255, 255, 0.06);
+                    border-radius: 8px;
+                    padding: 12px 14px;
+                }
+                .status-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .status-dot {
+                    width: 8px; height: 8px;
+                    border-radius: 50%;
+                    animation: pulse 2s ease-in-out infinite;
+                    flex-shrink: 0;
+                    position: relative;
+                }
+                .status-dot::after {
+                    content: '';
+                    position: absolute;
+                    inset: -3px;
+                    border-radius: 50%;
+                    background: currentColor;
+                    opacity: 0.2;
+                    animation: ripple 2s ease-in-out infinite;
+                }
                 @keyframes pulse {
                     0%, 100% { opacity: 1; }
                     50% { opacity: 0.6; }
                 }
-                
-                .panel-container {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    width: 360px;
-                    z-index: 2147483647;
-                    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-                    animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                @keyframes ripple {
+                    0% { transform: scale(1); opacity: 0.3; }
+                    50% { transform: scale(1.8); opacity: 0; }
+                    100% { transform: scale(1); opacity: 0; }
                 }
-                
-                .panel {
-                    background: rgba(255, 255, 255, 0.85);
-                    backdrop-filter: blur(40px) saturate(180%);
-                    -webkit-backdrop-filter: blur(40px) saturate(180%);
-                    border-radius: 18px;
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
-                                0 2px 8px rgba(0, 0, 0, 0.08);
-                    overflow: hidden;
-                    border: 0.5px solid rgba(255, 255, 255, 0.8);
-                }
-                
-                .header {
-                    padding: 20px 24px;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
-                }
-                
-                .title {
-                    font-size: 17px;
-                    font-weight: 600;
-                    color: #1d1d1f;
-                    letter-spacing: -0.022em;
-                }
-                
-                .minimize-btn {
-                    background: rgba(0, 0, 0, 0.04);
-                    border: none;
-                    color: #1d1d1f;
-                    width: 28px;
-                    height: 28px;
-                    border-radius: 50%;
-                    cursor: pointer;
-                    font-size: 18px;
-                    font-weight: 400;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-                    line-height: 1;
-                }
-                
-                .minimize-btn:hover {
-                    background: rgba(0, 0, 0, 0.08);
-                    transform: scale(1.05);
-                }
-                
-                .minimize-btn:active {
-                    transform: scale(0.95);
-                }
-                
-                .status-section {
-                    padding: 20px 24px;
-                }
-                
-                .status-box {
-                    background: rgba(0, 0, 0, 0.03);
-                    border-radius: 12px;
-                    padding: 16px;
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                }
-                
-                .status-dot {
-                    width: 8px;
-                    height: 8px;
-                    border-radius: 50%;
-                    flex-shrink: 0;
-                    animation: pulse 2s ease-in-out infinite;
-                }
-                
-                .status-dot.info { background: #007AFF; }
-                .status-dot.success { background: #34C759; }
-                .status-dot.warning { background: #FF9500; }
-                .status-dot.error { background: #FF3B30; }
-                
+                .status-dot.info { background: #3b82f6; color: #3b82f6; }
+                .status-dot.success { background: #10b981; color: #10b981; }
+                .status-dot.warning { background: #f59e0b; color: #f59e0b; }
+                .status-dot.error { background: #ef4444; color: #ef4444; }
                 .status-text {
-                    color: #1d1d1f;
-                    font-size: 14px;
+                    color: rgba(255, 255, 255, 0.9);
+                    font-size: 13px;
                     font-weight: 400;
-                    line-height: 1.47;
-                    letter-spacing: -0.016em;
+                    flex: 1;
+                    line-height: 1.5;
+                    letter-spacing: -0.01em;
                 }
-                
                 .panel-body {
                     max-height: 500px;
                     overflow: hidden;
-                    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
                     opacity: 1;
                 }
-                
                 .panel-body.hidden {
                     max-height: 0;
                     opacity: 0;
                 }
-                
                 .info-section {
-                    padding: 16px 24px 20px;
+                    padding: 12px 18px;
+                    background: rgba(0, 0, 0, 0.15);
+                    border-top: 1px solid rgba(255, 255, 255, 0.04);
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    border-top: 0.5px solid rgba(0, 0, 0, 0.06);
                 }
-                
                 .version, .credit {
-                    color: #86868b;
+                    color: rgba(255, 255, 255, 0.4);
                     font-size: 11px;
                     font-weight: 400;
                     font-style: italic;
-                    letter-spacing: -0.01em;
+                    letter-spacing: 0.01em;
                 }
-                
-                @media (prefers-color-scheme: dark) {
-                    .panel {
-                        background: rgba(30, 30, 30, 0.85);
-                        border: 0.5px solid rgba(255, 255, 255, 0.15);
-                    }
-                    
-                    .header {
-                        border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
-                    }
-                    
-                    .title {
-                        color: #f5f5f7;
-                    }
-                    
-                    .minimize-btn {
-                        background: rgba(255, 255, 255, 0.08);
-                        color: #f5f5f7;
-                    }
-                    
-                    .minimize-btn:hover {
-                        background: rgba(255, 255, 255, 0.12);
-                    }
-                    
-                    .status-box {
-                        background: rgba(255, 255, 255, 0.06);
-                    }
-                    
-                    .status-text {
-                        color: #f5f5f7;
-                    }
-                    
-                    .info-section {
-                        border-top: 0.5px solid rgba(255, 255, 255, 0.1);
-                    }
-                    
-                    .version, .credit {
-                        color: #86868b;
-                    }
-                }
-                
                 @media (max-width: 480px) {
                     .panel-container {
-                        top: 12px;
-                        right: 12px;
-                        left: 12px;
-                        width: auto;
+                        top: 10px; right: 10px; left: 10px; width: auto;
                     }
                 }
                 </style>
@@ -223,8 +175,10 @@
                         </div>
                         <div class="status-section">
                             <div class="status-box">
-                                <div class="status-dot info" id="dot"></div>
-                                <div class="status-text" id="text">${t.pleaseSolveCaptcha}</div>
+                                <div class="status-content">
+                                    <div class="status-dot info" id="dot"></div>
+                                    <div class="status-text" id="text">${t.pleaseSolveCaptcha}</div>
+                                </div>
                             </div>
                         </div>
                         <div class="panel-body hidden" id="body">
