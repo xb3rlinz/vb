@@ -9,7 +9,7 @@
 // @run-at       document-start
 // @grant        unsafeWindow
 // @icon         https://i.imgur.com/wY2kL.jpeg
-// @downloadURL  
-// @updateURL    
+// @downloadURL  https://raw.githubusercontent.com/xb3rlinz/vb/ddd4aa1af513b4442c53ed105c6ed209412c9765/user.js
+// @updateURL    https://raw.githubusercontent.com/xb3rlinz/vb/ddd4aa1af513b4442c53ed105c6ed209412c9765/user.js
 // @require      https://raw.githubusercontent.com/xb3rlinz/vb/3e90ec13bc05c4d4a0c6c9da9e49c3bbd04dc189/bypasser.js
 // ==/UserScript==
