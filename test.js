@@ -6,7 +6,7 @@
 
     // Headers
     const t = {
-        title: "TEST Bypasser",
+        title: "Volcano Bypasser",
         pleaseSolveCaptcha: "Solve the CAPTCHA to continue",
         captchaSuccess: "CAPTCHA solved",
         redirectingToWork: "Redirecting to Work.ink...",
@@ -193,345 +193,343 @@
 
     const panel = new BypassPanel();
 
-    // Handler for VOLCANO
+    // Handler for VOLCANO - EXACT LOGIC FROM WORKING SCRIPT
     if (host.includes("key.volcano.wtf")) {
-        if (debug) console.log('[Debug] Waiting Captcha');
+        if (debug) console.log('[Bypass] Volcano: Waiting for Continue/Copy button...');
+        let alreadyDoneContinue = false;
+        let alreadyDoneCopy = false;
 
-        let continueClicked = false;
-        let copyClicked = false;
-
-        const actOnCheckpoint = (node) => {
-            if (!continueClicked) {
-                const btns = (node?.nodeType === 1
-                    ? node.matches('#primaryButton[type="submit"], button[type="submit"], a, input[type=button], input[type=submit]')
-                        ? [node]
-                        : node.querySelectorAll('#primaryButton[type="submit"], button[type="submit"], a, input[type=button], input[type=submit]')
-                    : document.querySelectorAll('#primaryButton[type="submit"], button[type="submit"], a, input[type=button], input[type=submit]'));
-
-                for (const btn of btns) {
-                    const text = (btn.innerText || btn.value || '').trim().toLowerCase();
-                    if ((text.includes("continue") || text.includes("next step")) &&
-                        !btn.disabled &&
-                        btn.offsetParent) {
-                        continueClicked = true;
-                        panel.show('captchaSuccess', 'success');
-                        if (debug) console.log('[Debug] Captcha Solved');
-                        setTimeout(() => {
-                            btn.click();
-                            panel.show('redirectingToWork', 'info');
-                            if (debug) console.log('[Debug] Clicking Continue');
-                        }, 300);
-                        return true;
+        function actOnCheckpoint(node) {
+            if (!alreadyDoneContinue) {
+                const buttons = (node.nodeType === 1) 
+                    ? (node.matches('#primaryButton[type="submit"], button[type="submit"], a, input[type=button], input[type=submit]') 
+                        ? [node] 
+                        : node.querySelectorAll('#primaryButton[type="submit"], button[type="submit"], a, input[type=button], input[type=submit]')) 
+                    : document.querySelectorAll('#primaryButton[type="submit"], button[type="submit"], a, input[type=button], input[type=submit]');
+                
+                for (const btn of buttons) {
+                    const text = (btn.innerText || btn.value || "").trim().toLowerCase();
+                    if (text.includes("continue") || text.includes("next step")) {
+                        const disabled = btn.disabled || btn.getAttribute("aria-disabled") === "true";
+                        const visible = btn.offsetParent !== null;
+                        if (visible && !disabled) {
+                            alreadyDoneContinue = true;
+                            panel.show('captchaSuccess', 'success');
+                            setTimeout(() => { 
+                                try { 
+                                    btn.click(); 
+                                    panel.show('redirectingToWork', 'info'); 
+                                } catch (e) {} 
+                            }, 300);
+                            return true;
+                        }
                     }
                 }
             }
 
-            const copyBtn = (node?.nodeType === 1
-                ? node.matches("#copy-key-btn, .copy-btn, [aria-label='Copy']")
-                    ? node
-                    : node.querySelector("#copy-key-btn, .copy-btn, [aria-label='Copy']")
-                : document.querySelector("#copy-key-btn, .copy-btn, [aria-label='Copy']"));
-
-            if (copyBtn && !copyClicked) {
-                copyClicked = true;
+            const copyBtn = (node.nodeType === 1) 
+                ? (node.matches("#copy-key-btn, .copy-btn, [aria-label='Copy']") 
+                    ? node 
+                    : node.querySelector("#copy-key-btn, .copy-btn, [aria-label='Copy']")) 
+                : document.querySelector("#copy-key-btn, .copy-btn, [aria-label='Copy']");
+            
+            if (copyBtn) {
+                alreadyDoneCopy = true;
                 setInterval(() => {
-                    copyBtn.click();
-                    if (debug) console.log('[Debug] Copy button spam click');
-                    panel.show('bypassSuccessCopy', 'success');
+                    try { 
+                        copyBtn.click(); 
+                        panel.show('bypassSuccessCopy', 'success'); 
+                    }
+                    catch (e) {}
                 }, 500);
                 return true;
             }
             return false;
-        };
+        }
 
         const mo = new MutationObserver((mutations) => {
-            for (const m of mutations) {
-                if (m.type === 'childList') {
-                    for (const node of m.addedNodes) {
-                        if (node.nodeType === 1 && actOnCheckpoint(node)) {
-                            if (copyClicked) {
-                                mo.disconnect();
-                                return;
-                            }
+            for (const mutation of mutations) {
+                for (const node of (mutation.addedNodes || [])) { 
+                    if (node.nodeType === 1 && actOnCheckpoint(node)) {
+                        if(alreadyDoneCopy) { 
+                            mo.disconnect(); 
+                            return; 
                         }
                     }
-                } else if (m.type === 'attributes' && m.target.nodeType === 1) {
-                    if (actOnCheckpoint(m.target)) {
-                        if (copyClicked) {
-                            mo.disconnect();
-                            return;
-                        }
+                }
+                if (mutation.type === 'attributes' && actOnCheckpoint(mutation.target)) {
+                    if(alreadyDoneCopy) { 
+                        mo.disconnect(); 
+                        return; 
                     }
                 }
             }
         });
 
-        mo.observe(document.documentElement, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['disabled', 'aria-disabled', 'style']
+        mo.observe(document.documentElement, { 
+            childList: true, 
+            subtree: true, 
+            attributes: true, 
+            attributeFilter: ['disabled', 'style', 'aria-disabled'] 
         });
 
-        actOnCheckpoint();
+        if(actOnCheckpoint(document.documentElement) && alreadyDoneCopy) { 
+            mo.disconnect(); 
+        }
     }
 
-    // Handler for WORK.INK - Using working logic from second script
+    // Handler for WORK.INK - EXACT LOGIC FROM WORKING SCRIPT
     if (host.includes("work.ink")) {
+        panel.show('pleaseSolveCaptcha', 'info');
         const startTime = Date.now();
         let sessionController, sendMessageA, onLinkInfoA, onLinkDestinationA;
         let bypassTriggered = false;
-
         const map = { onLI: ["onLinkInfo"], onLD: ["onLinkDestination"] };
-        const types = {
-            mo: 'c_monetization',
-            ss: 'c_social_started',
-            tr: 'c_turnstile_response',
-            ad: 'c_adblocker_detected'
+        
+        function getFunction(obj, candidates = null) { 
+            if (candidates) { 
+                for (let i = 0; i < candidates.length; i++) { 
+                    const name = candidates[i]; 
+                    if (typeof obj[name] === "function") return { fn: obj[name], index: i, name }; 
+                } 
+            } else { 
+                for (let i in obj) { 
+                    if (typeof obj[i] == "function" && obj[i].length == 2) return { fn: obj[i], name: i }; 
+                } 
+            } 
+            return { fn: null, index: -1, name: null }; 
+        }
+        
+        const types = { 
+            mo: 'c_monetization', 
+            ss: 'c_social_started', 
+            tr: 'c_turnstile_response', 
+            ad: 'c_adblocker_detected' 
         };
 
-        const getFunction = (obj, candidates = null) => {
-            if (candidates) {
-                for (let i = 0; i < candidates.length; i++) {
-                    const name = candidates[i];
-                    if (typeof obj[name] === "function") return { fn: obj[name], index: i, name };
-                }
-            } else {
-                for (const i in obj) {
-                    if (typeof obj[i] === "function" && obj[i].length === 2) {
-                        return { fn: obj[i], name: i };
-                    }
-                }
-            }
-            return { fn: null, index: -1, name: null };
-        };
-
-        const spoofAllTasks = () => {
+        function spoofAllTasks() {
             if (!sessionController?.linkInfo) return;
-            if (debug) console.log('[Debug] Spoofing all tasks');
-
-            for (const soc of sessionController.linkInfo.socials || []) {
-                sendMessageA?.call(this, types.ss, { url: soc.url });
+            if (debug) console.log('[Bypass] Spoofing all tasks...');
+            
+            for (const soc of sessionController.linkInfo.socials || []) { 
+                sendMessageA?.call(this, types.ss, { url: soc.url }); 
             }
+            
+            for (const monetization of sessionController.linkInfo.monetizations || []) {
+                switch (monetization) {
+                    case 22: 
+                        sendMessageA?.call(this, types.mo, { type: 'readArticles2', payload: { event: 'read' } }); 
+                        break;
+                    case 25: 
+                        sendMessageA?.call(this, types.mo, { type: 'operaGX', payload: { event: 'start' } }); 
+                        fetch('https://work.ink/_api/v2/callback/operaGX', { 
+                            method: 'POST', 
+                            mode: 'no-cors', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ noteligible: true }) 
+                        }).catch(e => {}); 
+                        break;
+                    case 34: 
+                        sendMessageA?.call(this, types.mo, { type: 'norton', payload: { event: 'start' } }); 
+                        break;
+                    case 71: 
+                        sendMessageA?.call(this, types.mo, { type: 'externalArticles', payload: { event: 'start' } }); 
+                        break;
+                    case 45: 
+                        sendMessageA?.call(this, types.mo, { type: 'pdfeditor', payload: { event: 'installed' } }); 
+                        break;
+                    case 57: 
+                        sendMessageA?.call(this, types.mo, { type: 'betterdeals', payload: { event: 'installed' } }); 
+                        break;
+                }
+            }
+        }
 
-            const monetizationMap = {
-                22: () => sendMessageA?.call(this, types.mo, { type: 'readArticles2', payload: { event: 'read' } }),
-                25: () => {
-                    sendMessageA?.call(this, types.mo, { type: 'operaGX', payload: { event: 'start' } });
-                    fetch('https://work.ink/_api/v2/callback/operaGX', {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ noteligible: true })
-                    }).catch(() => {});
-                },
-                34: () => sendMessageA?.call(this, types.mo, { type: 'norton', payload: { event: 'start' } }),
-                71: () => sendMessageA?.call(this, types.mo, { type: 'externalArticles', payload: { event: 'start' } }),
-                45: () => sendMessageA?.call(this, types.mo, { type: 'pdfeditor', payload: { event: 'installed' } }),
-                57: () => sendMessageA?.call(this, types.mo, { type: 'betterdeals', payload: { event: 'installed' } })
+        function trm() {
+            return function(...a) {
+                const [msgType] = a;
+                if (msgType === types.ad) return;
+                const result = sendMessageA ? sendMessageA.apply(this, a) : undefined;
+
+                // Intelligent Spammer Logic
+                if (!bypassTriggered && sessionController?.linkInfo && msgType === types.tr) {
+                    bypassTriggered = true;
+                    panel.show('captchaSuccessBypassing', 'success');
+                    if (debug) console.log("[Bypass] CAPTCHA success! Starting 'Intelligent Spammer' sequence.");
+
+                    // Phase 1: Initial 5x Burst
+                    if (debug) console.log("[Bypass] Phase 1: Firing initial 5x spoof burst.");
+                    for (let i = 1; i <= 5; i++) spoofAllTasks();
+
+                    // Phase 2: Fallback Timer
+                    setTimeout(() => {
+                        const dest = getFunction(sessionController, map.onLD);
+                        if (dest.fn) {
+                            if (debug) console.log("[Bypass] Phase 2: 5s passed with no link. Firing fallback burst.");
+                            for (let i = 1; i <= 5; i++) spoofAllTasks();
+                        }
+                    }, 5000);
+                }
+                return result;
             };
+        }
 
-            for (const m of sessionController.linkInfo.monetizations || []) {
-                monetizationMap[m]?.();
-            }
-        };
+        function createDestinationProxy() {
+            return function(...args) {
+                const [data] = args;
+                if (debug) console.log('[Bypass] SUCCESS: Destination data received!', data);
 
-        const trm = () => function(...a) {
-            const [msgType] = a;
-            if (msgType === types.ad) return;
-            const result = sendMessageA ? sendMessageA.apply(this, a) : undefined;
+                // Kill Switch
+                const dest = getFunction(sessionController, map.onLD);
+                if (dest.fn) {
+                    if (debug) console.log("[Bypass] Kill Switch: Deactivating destination listener to prevent duplicates.");
+                    Object.defineProperty(sessionController, dest.name, {
+                        value: () => { if (debug) console.log("[Bypass] Subsequent destination ignored."); },
+                        writable: true, 
+                        configurable: true
+                    });
+                }
 
-            // Intelligent Spammer Logic
-            if (!bypassTriggered && sessionController?.linkInfo && msgType === types.tr) {
-                bypassTriggered = true;
-                panel.show('captchaSuccessBypassing', 'success');
-                if (debug) console.log('[Debug] CAPTCHA success! Starting intelligent spammer sequence');
+                const secondsPassed = (Date.now() - startTime) / 1000;
+                let waitTimeSeconds = 5;
+                const url = location.href;
+                if (url.includes('42rk6hcq') || url.includes('ito4wckq') || url.includes('pzarvhq1')) { 
+                    waitTimeSeconds = 38; 
+                }
 
-                // Phase 1: Initial 5x burst
-                if (debug) console.log('[Debug] Phase 1: Firing initial 5x spoof burst');
-                for (let i = 1; i <= 5; i++) spoofAllTasks();
+                if (secondsPassed >= waitTimeSeconds) {
+                    panel.show('backToCheckpoint', 'info');
+                    window.location.href = data.url;
+                } else {
+                    startCountdown(data.url, waitTimeSeconds - secondsPassed);
+                }
+            };
+        }
 
-                // Phase 2: Fallback timer
-                setTimeout(() => {
-                    const dest = getFunction(sessionController, map.onLD);
-                    if (dest.fn) {
-                        if (debug) console.log('[Debug] Phase 2: 5s passed with no link. Firing fallback burst');
-                        for (let i = 1; i <= 5; i++) spoofAllTasks();
-                    }
-                }, 5000);
-            }
-            return result;
-        };
-
-        const createLinkInfoProxy = () => function(...args) {
-            const [info] = args;
-            try {
-                Object.defineProperty(info, 'isAdblockEnabled', {
-                    get: () => false,
-                    set: () => {},
-                    configurable: false,
-                    enumerable: true
-                });
-            } catch (e) {}
-            return onLinkInfoA?.apply(this, args);
-        };
-
-        const startCountdown = (url, waitLeft) => {
+        function startCountdown(url, waitLeft) {
             panel.show('bypassSuccess', 'warning', { time: Math.ceil(waitLeft) });
             const interval = setInterval(() => {
                 waitLeft -= 1;
-                if (waitLeft > 0) {
-                    panel.show('bypassSuccess', 'warning', { time: Math.ceil(waitLeft) });
-                } else {
-                    clearInterval(interval);
-                    window.location.href = url;
+                if (waitLeft <= 0) { 
+                    clearInterval(interval); 
+                    window.location.href = url; 
+                } else { 
+                    panel.show('bypassSuccess', 'warning', { time: Math.ceil(waitLeft) }); 
                 }
             }, 1000);
-        };
+        }
 
-        const createDestinationProxy = () => function(...args) {
-            const [data] = args;
-            if (debug) console.log('[Debug] SUCCESS: Destination data received!', data);
+        function createLinkInfoProxy() { 
+            return function(...args) { 
+                try { 
+                    Object.defineProperty(args[0], 'isAdblockEnabled', { get: () => false }); 
+                } catch (e) {} 
+                return onLinkInfoA ? onLinkInfoA.apply(this, args) : undefined; 
+            }; 
+        }
 
-            // Kill Switch - prevents multiple redirects
-            const dest = getFunction(sessionController, map.onLD);
-            if (dest.fn) {
-                if (debug) console.log('[Debug] Kill Switch: Deactivating destination listener');
-                Object.defineProperty(sessionController, dest.name, {
-                    value: () => { if (debug) console.log('[Debug] Subsequent destination ignored'); },
-                    writable: true,
-                    configurable: true
-                });
-            }
+        function setupProxies() { 
+            const send = getFunction(sessionController); 
+            const info = getFunction(sessionController, map.onLI); 
+            const dest = getFunction(sessionController, map.onLD); 
+            
+            if (!send.fn || !info.fn || !dest.fn) return; 
+            
+            sendMessageA = send.fn; 
+            onLinkInfoA = info.fn; 
+            onLinkDestinationA = dest.fn; 
+            
+            try { 
+                Object.defineProperty(sessionController, send.name, { 
+                    get: trm, 
+                    set: v => (sendMessageA = v), 
+                    configurable: true 
+                }); 
+                Object.defineProperty(sessionController, info.name, { 
+                    get: createLinkInfoProxy, 
+                    set: v => (onLinkInfoA = v), 
+                    configurable: true 
+                }); 
+                Object.defineProperty(sessionController, dest.name, { 
+                    get: createDestinationProxy, 
+                    set: v => (onLinkDestinationA = v), 
+                    configurable: true 
+                }); 
+            } catch (e) {} 
+        }
 
-            const secondsPassed = (Date.now() - startTime) / 1000;
-            let waitTimeSeconds = 5;
-            const url = location.href;
-            if (url.includes('42rk6hcq') || url.includes('ito4wckq') || url.includes('pzarvhq1')) {
-                waitTimeSeconds = 38;
-            }
-            if (secondsPassed >= waitTimeSeconds) {
-                panel.show('backToCheckpoint', 'info');
-                window.location.href = data.url;
-            } else {
-                startCountdown(data.url, waitTimeSeconds - secondsPassed);
-            }
-            return onLinkDestinationA?.apply(this, args);
-        };
+        function checkController(target, prop, value) { 
+            if (value && typeof value === 'object' && getFunction(value).fn && getFunction(value, map.onLI).fn && getFunction(value, map.onLD).fn && !sessionController) { 
+                sessionController = value; 
+                setupProxies(); 
+            } 
+            return Reflect.set(target, prop, value); 
+        }
 
-        const setupProxies = () => {
-            const send = getFunction(sessionController);
-            const info = getFunction(sessionController, map.onLI);
-            const dest = getFunction(sessionController, map.onLD);
+        function createComponentProxy(comp) { 
+            return new Proxy(comp, { 
+                construct(target, args) { 
+                    const instance = Reflect.construct(target, args); 
+                    if (instance.$$.ctx) { 
+                        instance.$$.ctx = new Proxy(instance.$$.ctx, { set: checkController }); 
+                    } 
+                    return instance; 
+                } 
+            }); 
+        }
 
-            if (!send.fn || !info.fn || !dest.fn) return;
+        function createNodeProxy(node) { 
+            return async (...args) => { 
+                const result = await node(...args); 
+                return new Proxy(result, { 
+                    get: (t, p) => p === 'component' ? createComponentProxy(t.component) : Reflect.get(t, p) 
+                }); 
+            }; 
+        }
 
-            sendMessageA = send.fn;
-            onLinkInfoA = info.fn;
-            onLinkDestinationA = dest.fn;
+        function createKitProxy(kit) { 
+            if (!kit?.start) return [false, kit]; 
+            return [true, new Proxy(kit, { 
+                get(target, prop) { 
+                    if (prop === 'start') { 
+                        return function(...args) { 
+                            const [nodes, , opts] = args; 
+                            if (nodes?.nodes && opts?.node_ids) { 
+                                const idx = opts.node_ids[1]; 
+                                if (nodes.nodes[idx]) { 
+                                    nodes.nodes[idx] = createNodeProxy(nodes.nodes[idx]); 
+                                } 
+                            } 
+                            return kit.start.apply(this, args); 
+                        }; 
+                    } 
+                    return Reflect.get(target, prop); 
+                } 
+            })]; 
+        }
 
-            try {
-                Object.defineProperty(sessionController, send.name, {
-                    get: trm,
-                    set: v => (sendMessageA = v),
-                    configurable: true
-                });
-                Object.defineProperty(sessionController, info.name, {
-                    get: createLinkInfoProxy,
-                    set: v => (onLinkInfoA = v),
-                    configurable: true
-                });
-                Object.defineProperty(sessionController, dest.name, {
-                    get: createDestinationProxy,
-                    set: v => (onLinkDestinationA = v),
-                    configurable: true
-                });
-            } catch (e) {}
-        };
-
-        const checkController = (target, prop, value) => {
-            if (value &&
-                typeof value === 'object' &&
-                getFunction(value).fn &&
-                getFunction(value, map.onLI).fn &&
-                getFunction(value, map.onLD).fn &&
-                !sessionController) {
-                sessionController = value;
-                if (debug) console.log('[Debug] Controller detected');
-                setupProxies();
-            }
-            return Reflect.set(target, prop, value);
-        };
-
-        const createComponentProxy = (comp) => new Proxy(comp, {
-            construct(target, args) {
-                const instance = Reflect.construct(target, args);
-                if (instance.$$.ctx) {
-                    instance.$$.ctx = new Proxy(instance.$$.ctx, { set: checkController });
-                }
-                return instance;
-            }
-        });
-
-        const createNodeProxy = (node) => async (...args) => {
-            const result = await node(...args);
-            return new Proxy(result, {
-                get: (t, p) => p === 'component' ? createComponentProxy(t.component) : Reflect.get(t, p)
-            });
-        };
-
-        const createKitProxy = (kit) => {
-            if (!kit?.start) return [false, kit];
-            return [true, new Proxy(kit, {
-                get(target, prop) {
-                    if (prop === 'start') {
-                        return function(...args) {
-                            const [nodes, , opts] = args;
-                            if (nodes?.nodes && opts?.node_ids) {
-                                const idx = opts.node_ids[1];
-                                if (nodes.nodes[idx]) {
-                                    nodes.nodes[idx] = createNodeProxy(nodes.nodes[idx]);
-                                }
-                            }
-                            return kit.start.apply(this, args);
-                        };
-                    }
-                    return Reflect.get(target, prop);
-                }
-            })];
-        };
-
-        const origPromiseAll = unsafeWindow.Promise.all;
-        let intercepted = false;
-
-        unsafeWindow.Promise.all = async function(promises) {
-            const result = origPromiseAll.call(this, promises);
-            if (!intercepted) {
-                intercepted = true;
-                return await new Promise((resolve) => {
-                    result.then(([kit, app, ...args]) => {
-                        const [success, created] = createKitProxy(kit);
-                        if (success) {
-                            unsafeWindow.Promise.all = origPromiseAll;
-                        }
-                        resolve([created, app, ...args]);
-                    });
-                });
-            }
-            return await result;
-        };
-
-        new MutationObserver(mutations => {
-            for (const m of mutations) {
-                for (const node of m.addedNodes) {
-                    if (node.nodeType === 1) {
-                        if (node.classList?.contains("adsbygoogle")) {
-                            node.remove();
-                        }
-                        node.querySelectorAll?.('.adsbygoogle, [id*=ad], [id*=container]').forEach(el => el.remove());
-                    }
-                }
-            }
-        }).observe(document.documentElement, { childList: true, subtree: true });
+        function setupInterception() { 
+            const origPromiseAll = unsafeWindow.Promise.all; 
+            let intercepted = false; 
+            
+            unsafeWindow.Promise.all = async function(promises) { 
+                const result = origPromiseAll.call(this, promises); 
+                if (!intercepted) { 
+                    intercepted = true; 
+                    return await new Promise((resolve) => { 
+                        result.then(([kit, app, ...args]) => { 
+                            const [success, created] = createKitProxy(kit); 
+                            if (success) { 
+                                unsafeWindow.Promise.all = origPromiseAll; 
+                            } 
+                            resolve([created, app, ...args]); 
+                        }); 
+                    }); 
+                } 
+                return await result; 
+            }; 
+        }
+        
+        setupInterception();
     }
 })();
