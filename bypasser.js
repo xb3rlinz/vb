@@ -152,14 +152,16 @@
                 .info-section {
                     padding: 16px 20px;
                     background: rgba(0,0,0,0.2);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
                 }
                 .version, .credit {
                     color: rgba(255,255,255,0.6);
                     font-size: 12px;
                     font-weight: 500;
-                    text-align: center;
+                    font-style: italic;
                 }
-                .version { margin-bottom: 8px; }
                 @media (max-width: 480px) {
                     .panel-container {
                         top: 10px; right: 10px; left: 10px; width: auto;
@@ -170,7 +172,7 @@
                     <div class="panel">
                         <div class="header">
                             <div class="title">${t.title}</div>
-                            <button class="minimize-btn" id="btn">−</button>
+                            <button class="minimize-btn" id="btn">+</button>
                         </div>
                         <div class="status-section">
                             <div class="status-box">
@@ -180,7 +182,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="panel-body" id="body">
+                        <div class="panel-body hidden" id="body">
                             <div class="info-section">
                                 <div class="version">${t.version}</div>
                                 <div class="credit">${t.madeBy}</div>
